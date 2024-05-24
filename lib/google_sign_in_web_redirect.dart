@@ -75,13 +75,18 @@ class GoogleSignWeb {
   String? get token {
     return _token ?? _signInGoogleQueryParameters?.idToken;
   }
+  
+  String? get queryParamState {
+    return _signInGoogleQueryParameters?.state;
+  }
 
   static void getQueryParameters() {
     if (kIsWeb) {
       if (Uri.base.hasFragment) {
+        final fullUri = Uri.parse(Uri.base.path + "?" + Uri.base.fragment);
         _signInGoogleQueryParameters = SignInGoogleQueryParameters(
-          idToken: Uri.parse(Uri.base.path + "?" + Uri.base.fragment)
-              .queryParameters['id_token'],
+          idToken: fullUri.queryParameters['id_token'],
+          state: fullUri.queryParameters['state'],
         );
       } else if (Uri.base.queryParameters['code'] != null &&
           Uri.base.queryParameters['scope'] != null) {
@@ -195,8 +200,9 @@ class GoogleSignWeb {
 class SignInGoogleQueryParameters {
   final String? code;
   final String? idToken;
+  final String? state;
 
-  SignInGoogleQueryParameters({this.code, this.idToken});
+  SignInGoogleQueryParameters({this.code, this.idToken, this.state});
 }
 
 class _GoogleJWT {
